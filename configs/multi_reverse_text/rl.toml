@@ -28,5 +28,5 @@ num_examples = 16
 [trainer.optim]
 lr = 3e-6
 
-[inference]
+[inference.server]
 port = 8001
