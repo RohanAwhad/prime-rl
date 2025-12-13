@@ -8,6 +8,9 @@ batch_size = 128
 rollouts_per_example = 16
 seq_len = 2048
 
+[orchestrator.client]
+base_url = ["http://localhost:8002/v1"]
+
 [orchestrator.sampling]
 max_tokens = 128
 
@@ -25,4 +28,5 @@ num_examples = 16
 [trainer.optim]
 lr = 3e-6
 
-[inference] # Default inference config
+[inference.server]
+port = 8002
