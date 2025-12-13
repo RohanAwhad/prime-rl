@@ -9,7 +9,7 @@ rollouts_per_example = 16
 seq_len = 2048
 
 [orchestrator.client]
-base_url = ["http://localhost:8001/v1"]
+base_url = ["http://localhost:8002/v1"]
 
 [orchestrator.sampling]
 max_tokens = 128
@@ -29,4 +29,4 @@ num_examples = 16
 lr = 3e-6
 
 [inference.server]
-port = 8001
+port = 8002
