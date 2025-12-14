@@ -1,9 +1,9 @@
 # M2 Inference Server Config (Trainable Refiner)
 # This server receives weight updates during RL training.
-# Standard inference config on port 8000.
+# Standard inference config on port 8002.
 
 [server]
-port = 8000
+port = 8002
 
 [model]
 name = "Qwen/Qwen3-0.6B"

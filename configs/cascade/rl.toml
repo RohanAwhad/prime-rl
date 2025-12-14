@@ -26,7 +26,7 @@ seq_len = 2048
 
 [orchestrator.client]
 # Only M2 - M1 stays frozen (not in this list)
-base_url = ["http://localhost:8000/v1"]
+base_url = ["http://localhost:8002/v1"]
 
 [orchestrator.sampling]
 max_tokens = 128
@@ -36,7 +36,7 @@ id = "cascade_refine"
 
 [orchestrator.env.args]
 base_env_id = "reverse-text"
-m1_base_url = "http://localhost:8001/v1"
+m1_base_url = "http://localhost:8003/v1"
 m1_model = "Qwen/Qwen3-0.6B"
 
 # Trainer settings
@@ -45,4 +45,4 @@ lr = 3e-6
 
 # Inference settings (M2 only)
 [inference.server]
-port = 8000
+port = 8002

@@ -9,7 +9,7 @@ max_steps = 20
 
 [client]
 # Only M2 server - M1 is NOT here so it stays frozen (no weight updates)
-base_url = ["http://localhost:8000/v1"]
+base_url = ["http://localhost:8002/v1"]
 
 [model]
 name = "Qwen/Qwen3-0.6B"
@@ -22,5 +22,5 @@ id = "cascade_refine"
 
 [env.args]
 base_env_id = "reverse-text"
-m1_base_url = "http://localhost:8001/v1"
+m1_base_url = "http://localhost:8003/v1"
 m1_model = "Qwen/Qwen3-0.6B"

@@ -16,7 +16,7 @@ set -e
 PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
 cd "$PROJECT_DIR"
 
-M1_PORT="${M1_PORT:-8001}"
+M1_PORT="${M1_PORT:-8003}"
 M1_HEALTH_TIMEOUT="${M1_HEALTH_TIMEOUT:-120}"  # seconds
 
 # Colors for output

@@ -1,9 +1,9 @@
 # M1 Inference Server Config (Frozen Drafter)
 # This server generates initial drafts and does NOT receive weight updates.
-# Run on port 8001 to avoid conflict with M2 on port 8000.
+# Run on port 8003 to avoid conflict with M2 on port 8002.
 
 [server]
-port = 8001
+port = 8003
 
 [model]
 name = "Qwen/Qwen3-0.6B"
