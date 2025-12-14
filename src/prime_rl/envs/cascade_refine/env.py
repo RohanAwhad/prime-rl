@@ -97,12 +97,9 @@ class CascadeRefineEnv(vf.Environment):
         # Get M1 draft
         draft = await self._get_m1_draft(original_prompt)
 
-        # Modify input with draft
+        # Modify input with draft - append draft and refine request to message list
         modified_input = vf.RolloutInput(**input)
-        modified_input["prompt"] = self.refine_template.format(
-            query=original_prompt,
-            draft=draft,
-        )
+        modified_input["prompt"] = self._build_refine_prompt(original_prompt, draft)
         modified_input["_original_prompt"] = original_prompt
         modified_input["_m1_draft"] = draft
 
@@ -114,11 +111,42 @@ class CascadeRefineEnv(vf.Environment):
             sampling_args=sampling_args,
         )
 
-    async def _get_m1_draft(self, prompt: str) -> str:
-        """Call M1 to generate a draft response."""
+    def _build_refine_prompt(
+        self, original_prompt: str | list[dict[str, Any]], draft: str
+    ) -> str | list[dict[str, Any]]:
+        """Build the prompt for M2 by appending draft and refine request.
+
+        If original_prompt is a string, returns formatted string.
+        If original_prompt is a message list, appends assistant draft and user refine request.
+        """
+        if isinstance(original_prompt, str):
+            return self.refine_template.format(query=original_prompt, draft=draft)
+
+        # Message list format - append draft as assistant, then user refine request
+        messages = list(original_prompt)  # Copy to avoid mutation
+        messages.append({"role": "assistant", "content": draft})
+        messages.append({
+            "role": "user",
+            "content": "Review your draft answer above. If there are any errors or areas for improvement, "
+            "provide a corrected and refined answer. If the draft is correct, you may restate it with any clarifications.",
+        })
+        return messages
+
+    async def _get_m1_draft(self, prompt: str | list[dict[str, Any]]) -> str:
+        """Call M1 to generate a draft response.
+
+        Args:
+            prompt: Either a string prompt or a list of message dicts (OpenAI format)
+        """
+        if isinstance(prompt, str):
+            messages = [{"role": "user", "content": prompt}]
+        else:
+            # Already a list of message dicts
+            messages = prompt
+
         response = await self.m1_client.chat.completions.create(
             model=self.m1_model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=messages,
             **self.m1_sampling_args,
         )
         return response.choices[0].message.content or ""
@@ -146,10 +174,7 @@ class CascadeRefineEnv(vf.Environment):
         for inp, draft in zip(group_inputs, drafts):
             modified_inp = vf.RolloutInput(**inp)
             original_prompt = inp.get("prompt", "")
-            modified_inp["prompt"] = self.refine_template.format(
-                query=original_prompt,
-                draft=draft,
-            )
+            modified_inp["prompt"] = self._build_refine_prompt(original_prompt, draft)
             # Store original data for reference/logging
             modified_inp["_original_prompt"] = original_prompt
             modified_inp["_m1_draft"] = draft

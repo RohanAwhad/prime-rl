@@ -49,10 +49,11 @@ trap cleanup SIGINT SIGTERM EXIT
 # Create logs directory
 mkdir -p logs
 
-# Start M1 (frozen drafter) - runs in background
-echo -e "${YELLOW}[*] Starting M1 inference server (frozen) on port $M1_PORT...${NC}"
+# Start M1 (frozen drafter) - runs in background on GPU 7 (separate from M2 on GPU 0, trainer on GPU 1)
+M1_GPU="${M1_GPU:-7}"
+echo -e "${YELLOW}[*] Starting M1 inference server (frozen) on port $M1_PORT, GPU $M1_GPU...${NC}"
 M1_LOG="logs/m1_$(date +%Y%m%d_%H%M%S).log"
-uv run inference @ configs/cascade/m1_infer.toml > "$M1_LOG" 2>&1 &
+CUDA_VISIBLE_DEVICES=$M1_GPU uv run inference @ configs/cascade/m1_infer.toml > "$M1_LOG" 2>&1 &
 M1_PID=$!
 echo "    M1 PID: $M1_PID"
 echo "    M1 Log: $M1_LOG"
@@ -83,7 +84,7 @@ echo ""
 echo "========================================"
 echo "Running Cascade RL Training"
 echo "========================================"
-echo "M1 (frozen): http://localhost:$M1_PORT/v1"
+echo "M1 (frozen): http://localhost:$M1_PORT/v1 (GPU $M1_GPU)"
 echo "M2 (trainable): Started by uv run rl"
 echo ""
 echo "Press Ctrl+C to stop all components."
