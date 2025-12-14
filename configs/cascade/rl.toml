@@ -9,10 +9,10 @@
 #
 # Or use scripts/run_cascade.sh which handles both.
 
-max_steps = 20
+max_steps = 200
 
 [model]
-name = "Qwen/Qwen3-0.6B"
+name = "Qwen/Qwen2.5-0.5B-Instruct"
 
 [wandb]
 project = "cascade-refine"
@@ -29,7 +29,7 @@ seq_len = 2048
 base_url = ["http://localhost:8002/v1"]
 
 [orchestrator.sampling]
-max_tokens = 128
+max_tokens = 512
 
 [[orchestrator.env]]
 id = "cascade_refine"
@@ -37,7 +37,7 @@ id = "cascade_refine"
 [orchestrator.env.args]
 base_env_id = "reverse-text"
 m1_base_url = "http://localhost:8003/v1"
-m1_model = "Qwen/Qwen3-0.6B"
+m1_model = "Qwen/Qwen2.5-0.5B-Instruct"
 
 # Trainer settings
 [trainer.optim]

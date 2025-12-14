@@ -55,7 +55,7 @@ class CascadeRefineEnv(vf.Environment):
         self.base_env = base_env
         self.m1_client = AsyncOpenAI(base_url=m1_base_url, api_key="EMPTY")
         self.m1_model = m1_model
-        self.m1_sampling_args = m1_sampling_args or {"temperature": 0.7, "max_tokens": 1024}
+        self.m1_sampling_args = m1_sampling_args or {"temperature": 0.7, "max_tokens": 512}
         self.refine_template = refine_template or DEFAULT_REFINE_TEMPLATE
 
         # Copy required attributes from base_env for compatibility
