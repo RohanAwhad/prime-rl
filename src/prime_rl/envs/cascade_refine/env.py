@@ -18,9 +18,9 @@ DEFAULT_REFINE_TEMPLATE = """Original question: {query}
 Draft answer:
 {draft}
 
-Review the draft answer above. If there are any errors or areas for improvement,
-provide a corrected and refined answer. If the draft is correct, you may restate
-it with any clarifications.
+Review the draft answer above carefully. Check if it correctly completes the task.
+If the draft has any errors or does not correctly complete the task, provide the correct answer.
+You must complete the task correctly in your response.
 
 Refined answer:"""
 
@@ -127,8 +127,9 @@ class CascadeRefineEnv(vf.Environment):
         messages.append({"role": "assistant", "content": draft})
         messages.append({
             "role": "user",
-            "content": "Review your draft answer above. If there are any errors or areas for improvement, "
-            "provide a corrected and refined answer. If the draft is correct, you may restate it with any clarifications.",
+            "content": "Review your draft answer above carefully. Check if it correctly completes the task. "
+            "If the draft has any errors or does not correctly complete the task, provide the correct answer. "
+            "You must complete the task correctly in your response.",
         })
         return messages
 

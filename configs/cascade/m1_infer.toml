@@ -6,4 +6,4 @@
 port = 8003
 
 [model]
-name = "Qwen/Qwen2.5-0.5B-Instruct"
+name = "Qwen/Qwen3-0.6B"

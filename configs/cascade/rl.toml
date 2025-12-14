@@ -12,7 +12,7 @@
 max_steps = 200
 
 [model]
-name = "Qwen/Qwen2.5-0.5B-Instruct"
+name = "Qwen/Qwen3-0.6B"
 
 [wandb]
 project = "cascade-refine"
@@ -37,7 +37,7 @@ id = "cascade_refine"
 [orchestrator.env.args]
 base_env_id = "reverse-text"
 m1_base_url = "http://localhost:8003/v1"
-m1_model = "Qwen/Qwen2.5-0.5B-Instruct"
+m1_model = "Qwen/Qwen3-0.6B"
 
 # Trainer settings
 [trainer.optim]
