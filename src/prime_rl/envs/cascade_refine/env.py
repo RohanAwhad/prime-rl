@@ -50,12 +50,18 @@ class CascadeRefineEnv(vf.Environment):
             m1_sampling_args: Sampling parameters for M1 generation
             refine_template: Template for formatting prompt to M2
         """
-        super().__init__()
+        # Don't call super().__init__() - we delegate everything to base_env
+        # Just set up the M1 client and store references
         self.base_env = base_env
         self.m1_client = AsyncOpenAI(base_url=m1_base_url, api_key="EMPTY")
         self.m1_model = m1_model
         self.m1_sampling_args = m1_sampling_args or {"temperature": 0.7, "max_tokens": 1024}
         self.refine_template = refine_template or DEFAULT_REFINE_TEMPLATE
+
+        # Copy required attributes from base_env for compatibility
+        self.rubric = base_env.rubric
+        self._cleanup_handlers = getattr(base_env, "_cleanup_handlers", [])
+        self._teardown_handlers = getattr(base_env, "_teardown_handlers", [])
 
     def get_dataset(self, **kwargs) -> Any:
         """Delegate to base environment."""
@@ -64,11 +70,6 @@ class CascadeRefineEnv(vf.Environment):
     def get_eval_dataset(self, **kwargs) -> Any:
         """Delegate to base environment."""
         return self.base_env.get_eval_dataset(**kwargs)
-
-    @property
-    def rubric(self) -> Any:
-        """Delegate to base environment."""
-        return self.base_env.rubric
 
     async def setup_state(self, state: vf.State) -> vf.State:
         """Delegate setup_state to base environment."""
