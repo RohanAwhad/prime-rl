@@ -70,6 +70,46 @@ class CascadeRefineEnv(vf.Environment):
         """Delegate to base environment."""
         return self.base_env.rubric
 
+    async def setup_state(self, state: vf.State) -> vf.State:
+        """Delegate setup_state to base environment."""
+        return await self.base_env.setup_state(state)
+
+    async def rollout(
+        self,
+        input: vf.RolloutInput,
+        client: AsyncOpenAI,
+        model: str,
+        sampling_args: vf.SamplingArgs | None = None,
+    ) -> vf.State:
+        """
+        Run a single rollout with M1 draft injection.
+
+        1. Get M1 draft for the input
+        2. Modify the prompt to include the draft
+        3. Delegate to base_env.rollout
+        """
+        original_prompt = input.get("prompt", "")
+
+        # Get M1 draft
+        draft = await self._get_m1_draft(original_prompt)
+
+        # Modify input with draft
+        modified_input = vf.RolloutInput(**input)
+        modified_input["prompt"] = self.refine_template.format(
+            query=original_prompt,
+            draft=draft,
+        )
+        modified_input["_original_prompt"] = original_prompt
+        modified_input["_m1_draft"] = draft
+
+        # Delegate to base environment
+        return await self.base_env.rollout(
+            input=modified_input,
+            client=client,
+            model=model,
+            sampling_args=sampling_args,
+        )
+
     async def _get_m1_draft(self, prompt: str) -> str:
         """Call M1 to generate a draft response."""
         response = await self.m1_client.chat.completions.create(
