@@ -1,0 +1,48 @@
+# Combined Cascade RL Training Config
+# Use with: uv run rl @ configs/cascade/rl.toml
+#
+# Architecture: Query -> M1 (frozen) -> M2 (trainable) -> Answer
+# M1 generates draft, M2 refines it. Only M2 receives weight updates.
+#
+# NOTE: This config only starts M2. M1 must be started separately via:
+#   uv run inference @ configs/cascade/m1_infer.toml
+#
+# Or use scripts/run_cascade.sh which handles both.
+
+max_steps = 20
+
+[model]
+name = "Qwen/Qwen3-0.6B"
+
+[wandb]
+project = "cascade-refine"
+name = "cascade-reverse-text"
+
+# Orchestrator settings
+[orchestrator]
+batch_size = 128
+rollouts_per_example = 16
+seq_len = 2048
+
+[orchestrator.client]
+# Only M2 - M1 stays frozen (not in this list)
+base_url = ["http://localhost:8000/v1"]
+
+[orchestrator.sampling]
+max_tokens = 128
+
+[[orchestrator.env]]
+id = "cascade_refine"
+
+[orchestrator.env.args]
+base_env_id = "reverse-text"
+m1_base_url = "http://localhost:8001/v1"
+m1_model = "Qwen/Qwen3-0.6B"
+
+# Trainer settings
+[trainer.optim]
+lr = 3e-6
+
+# Inference settings (M2 only)
+[inference.server]
+port = 8000

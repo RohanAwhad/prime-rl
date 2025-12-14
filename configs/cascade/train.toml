@@ -1,0 +1,10 @@
+# Trainer Config for Cascade Training
+# Standard RL trainer config for M2 (the trainable refiner).
+
+max_steps = 20
+
+[model]
+name = "Qwen/Qwen3-0.6B"
+
+[optim]
+lr = 3e-6

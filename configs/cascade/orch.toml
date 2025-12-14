@@ -1,0 +1,26 @@
+# Orchestrator Config for Cascade Training
+# Uses cascade_refine environment that wraps M1 draft generation.
+# IMPORTANT: client.base_url only points to M2, keeping M1 frozen.
+
+batch_size = 128
+rollouts_per_example = 16
+seq_len = 2048
+max_steps = 20
+
+[client]
+# Only M2 server - M1 is NOT here so it stays frozen (no weight updates)
+base_url = ["http://localhost:8000/v1"]
+
+[model]
+name = "Qwen/Qwen3-0.6B"
+
+[sampling]
+max_tokens = 128
+
+[[env]]
+id = "cascade_refine"
+
+[env.args]
+base_env_id = "reverse-text"
+m1_base_url = "http://localhost:8001/v1"
+m1_model = "Qwen/Qwen3-0.6B"

@@ -116,6 +116,55 @@ uv run ruff check src tests
 uv run ruff format src tests
 ```
 
+### Remote Deployment
+
+Deploy and run workloads on remote GPU nodes (e.g., rh-h100-09, rh-h200-02).
+
+**Prerequisites:**
+- SSH access to the remote node configured in `~/.ssh/config`
+- Changes committed to git (deploy uses `git archive`)
+
+**Deploy standard workload:**
+```bash
+# Deploy and run the default workload (multi_reverse_text)
+python scripts/deploy_to_remote.py rh-h100-09
+
+# With wandb logging
+WANDB_API_KEY=your_key python scripts/deploy_to_remote.py rh-h100-09
+```
+
+**Deploy cascade training:**
+```bash
+# Deploy and run cascade LLM training (M1 frozen -> M2 trainable)
+python scripts/deploy_cascade.py rh-h100-09
+```
+
+**Monitor remote session:**
+```bash
+# Attach to tmux session
+ssh rh-h100-09
+tmux attach -t prime-rl    # or 'cascade' for cascade training
+
+# View session list
+ssh rh-h100-09 'tmux list-sessions'
+
+# Kill session
+ssh rh-h100-09 'tmux kill-session -t prime-rl'
+```
+
+**Run workload manually on remote:**
+```bash
+# SSH into node
+ssh rh-h100-09
+cd /workspace/home/lab/rawhad/2_Learnings/prime_rl_learnings/prime-rl
+
+# Run standard workload
+./run_workload.sh
+
+# Run cascade training
+./run_cascade.sh
+```
+
 ## Configuration System
 
 All entrypoints use `pydantic-settings` with **layered precedence**:
