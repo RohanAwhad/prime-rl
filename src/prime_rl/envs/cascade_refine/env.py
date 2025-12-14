@@ -60,6 +60,8 @@ class CascadeRefineEnv(vf.Environment):
 
         # Copy required attributes from base_env for compatibility
         self.rubric = base_env.rubric
+        self.env_id = getattr(base_env, "env_id", None)
+        self.parser = getattr(base_env, "parser", None)
         self._cleanup_handlers = getattr(base_env, "_cleanup_handlers", [])
         self._teardown_handlers = getattr(base_env, "_teardown_handlers", [])
 
