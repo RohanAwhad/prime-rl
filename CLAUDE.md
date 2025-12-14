@@ -152,6 +152,7 @@ Defined in `pyproject.toml` `[project.scripts]`:
 - `uv run sft`: SFT trainer (`src/prime_rl/trainer/sft/train.py`)
 - `uv run eval`: Evaluation harness (`src/prime_rl/eval/eval.py`)
 - `uv run synthesize`: Synthetic data generation (`src/prime_rl/synthesize/synthesize.py`)
+- `uv run monitor`: Wandb training monitor (`src/prime_rl/monitor/wandb_monitor.py`)
 
 ### Core Modules
 
@@ -280,6 +281,47 @@ Key env vars:
 - Logs to stdout + optional file sinks
 - Log level: `LOGGING_LEVEL` env var (default: INFO)
 - Wandb integration: set `--wandb.enabled` and `--wandb.project`
+
+### Wandb Monitoring Script
+Fetch training metrics and samples from wandb runs.
+
+**On GPU nodes (Linux):**
+```bash
+uv run monitor --list
+uv run monitor <run_id> --project prime-rl
+```
+
+**On local machine (macOS):**
+```bash
+# Use uvx to bypass CUDA dependencies
+uvx --with wandb --with pandas python src/prime_rl/monitor/wandb_monitor.py --list --project prime-rl-test
+uvx --with wandb --with pandas python src/prime_rl/monitor/wandb_monitor.py <run_id> --project prime-rl-test
+```
+
+**Common options:**
+```bash
+# List recent runs
+--list [--num-runs 20]
+
+# Fetch specific run
+<run_id> [--entity my-team] [--project prime-rl]
+
+# Save plots
+--save-dir ./plots
+
+# Filter samples by reward threshold
+--reward-threshold 0.3 --max-samples 20
+
+# Show only metrics or samples
+--metrics-only | --samples-only
+```
+
+**Output includes:**
+- Metrics summary: loss/mean, entropy, mismatch_kl, reward/mean, val_reward, throughput, MFU
+- Failed samples: messages with reward below threshold (for debugging model errors)
+- Plots: loss.png, reward.png, optimizer.png (when `--save-dir` specified)
+
+**Requires:** `WANDB_API_KEY` environment variable
 
 ## Development Notes
 
