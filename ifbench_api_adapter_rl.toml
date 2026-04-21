@@ -35,6 +35,9 @@ warmup_steps=1000  # 0.1 of 10_000
 # [trainer.model.ac]
 # freq = 1
 
+[trainer.model]
+fsdp_cpu_offload = true  # offloads params, grads, and optimizer states to CPU (mutually exclusive with optim_cpu_offload)
+
 [trainer.model.lora]
 rank = 32
 alpha = 64.0
