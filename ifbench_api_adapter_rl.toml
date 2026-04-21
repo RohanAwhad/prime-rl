@@ -2,15 +2,15 @@ max_steps = 10000
 seq_len = 8192
 
 [deployment]
-num_train_gpus = 2
-num_infer_gpus = 6
+num_train_gpus = 4
+num_infer_gpus = 4
 
 [model]
 name = "Qwen/Qwen3-8B"
 
 [wandb]
 project = "api-adapter"  # matches WANDB_PROJECT in api-adapter/.env
-name = "test-prime-rl-ifbench-8b-lora-8gpu"
+name = "test-prime-rl-ifbench-8b-lora-8gpu-v3"
 
 [orchestrator]
 batch_size = 1024
@@ -22,6 +22,14 @@ temperature = 1.0
 
 [[orchestrator.train.env]]
 id = "ifbench_api_adapter@local"
+
+[[orchestrator.buffer]]
+#  - Thresholds: permanently move the example out of the sampling pool (one-way door)
+#  - Online difficulty filtering: drop the rollouts from this batch, but the example stays in the pool and gets sampled again next step
+easy_threshold = 1.0  # we dont want to waste training cycles on easy problems because we already know how to solve them 
+easy_fraction = 0.3  # but we also want to make sure that we dont forget them, and hence when we restart training, we will have a easy_fraction of 0.3 in the pool again, and then decide later if they are still easy.
+online_difficulty_filtering = true
+
 
 [trainer.optim]
 lr = 5e-6
@@ -45,7 +53,8 @@ target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj"
 
 [ckpt]
 interval = 200
+resume_step = -1
 
 [inference.parallel]
-dp = 3
+dp = 2
 tp = 2

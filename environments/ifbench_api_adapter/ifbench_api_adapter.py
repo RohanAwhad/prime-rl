@@ -3,21 +3,18 @@ import re
 from pathlib import Path
 
 import verifiers as vf
-from datasets import Dataset
-from loguru import logger as loguru_logger
-
 from api_adapter.ifbench.eval_utils import (
     InputExample,
     normalize_instruction_kwargs,
     test_instruction_following_loose,
 )
+from datasets import Dataset
+from loguru import logger as loguru_logger
 from src.prompt import SYSTEM_PROMPT
 
 logger = logging.getLogger("verifiers.ifbench")
 
-_ADAPTER_RESPONSE_PATTERN = re.compile(
-    r"<\|ADAPTER_RESPONSE_START\|>(.*)<\|ADAPTER_RESPONSE_END\|>", re.DOTALL
-)
+_ADAPTER_RESPONSE_PATTERN = re.compile(r"<\|ADAPTER_RESPONSE_START\|>(.*)<\|ADAPTER_RESPONSE_END\|>", re.DOTALL)
 
 
 def _extract_adapter_response(response: str) -> str:
@@ -75,15 +72,17 @@ def load_environment(
         system_prompt = SYSTEM_PROMPT
 
     dataset = Dataset.from_json(data_path)
-    dataset = dataset.map(lambda x: {
-        "question": (
-            f"User Prompt: {x['messages'][0]['content']}\n"
-            f"<draft_response>{x['claude_response']}</draft_response>\n"
-            "/no_think"
-        ),
-        "answer": "",
-        "info": {**x},
-    })
+    dataset = dataset.map(
+        lambda x: {
+            "question": (
+                f"User Prompt: {x['messages'][0]['content']}\n"
+                f"<draft_response>{x['claude_response']}</draft_response>\n"
+                "/no_think"
+            ),
+            "answer": "",
+            "info": {**x},
+        }
+    )
 
     eval_dataset = dataset.select(range(10))
 
