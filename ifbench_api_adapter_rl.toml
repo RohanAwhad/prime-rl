@@ -1,0 +1,48 @@
+max_steps = 10000
+seq_len = 8192
+
+[deployment]
+num_train_gpus = 2
+num_infer_gpus = 6
+
+[model]
+name = "Qwen/Qwen3-8B"
+
+[wandb]
+project = "api-adapter"  # matches WANDB_PROJECT in api-adapter/.env
+name = "test-prime-rl-ifbench-8b-lora-8gpu"
+
+[orchestrator]
+batch_size = 1024
+rollouts_per_example = 64
+
+[orchestrator.train.sampling]
+max_completion_tokens = 2048
+temperature = 1.0
+
+[[orchestrator.train.env]]
+id = "ifbench_api_adapter@local"
+
+[trainer.optim]
+lr = 5e-6
+weight_decay = 0.001
+type = "adamw"
+
+[trainer.scheduler]
+type = "linear"
+warmup_steps=1000  # 0.1 of 10_000
+
+# [trainer.model.ac]
+# freq = 1
+
+[trainer.model.lora]
+rank = 32
+alpha = 64.0
+target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+[ckpt]
+interval = 200
+
+[inference.parallel]
+dp = 3
+tp = 2
