@@ -67,6 +67,10 @@ def _reward_fn(completion: vf.Messages, parser: vf.Parser, state: vf.State, info
         )
         loguru_logger.debug(f"claude reward: {info['claude_reward']}")
 
+        # logs to state
+        state["lgtm_count"] = 1 if response.strip() == "CORRECT" else 0
+        state["fixme_count"] = 1 if response.strip() != "CORRECT" else 0
+
         if info["claude_reward"]:
             if response.strip() == "CORRECT":
                 return 1.0
@@ -89,6 +93,14 @@ def _reward_fn(completion: vf.Messages, parser: vf.Parser, state: vf.State, info
         return 0.0
 
 
+def get_lgtm_count(state: vf.State, **kwargs):
+    return state["lgtm_count"]
+
+
+def get_fixme_count(state: vf.State, **kwargs):
+    return state["fixme_count"]
+
+
 def load_environment(
     data_path: str | None = None,
     system_prompt: str | None = None,
@@ -103,9 +115,8 @@ def load_environment(
     dataset = dataset.map(
         lambda x: {
             "question": (
-                f"User Prompt: {x['messages'][0]['content']}\n"
-                f"<draft_response>{x['claude_response']}</draft_response>\n"
-                "/no_think"
+                f"User Prompt: {x['messages'][0]['content']}\n<draft_response>{x['claude_response']}</draft_response>"
+                # "/no_think"
             ),
             "answer": "",
             "info": {**x},
@@ -125,7 +136,7 @@ def load_environment(
     val_dataset = concatenate_datasets([lgtm_val_dataset, fixme_val_dataset])
 
     parser = vf.MaybeThinkParser(extract_fn=_extract_adapter_response)
-    rubric = vf.Rubric(funcs=[_reward_fn], weights=[1.0], parser=parser)
+    rubric = vf.Rubric(funcs=[_reward_fn, get_lgtm_count, get_fixme_count], weights=[1.0, 0.0, 0.0], parser=parser)
 
     return vf.SingleTurnEnv(
         dataset=train_dataset,
