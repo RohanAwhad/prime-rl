@@ -56,6 +56,9 @@ def _reward_fn(completion: vf.Messages, parser: vf.Parser, state: vf.State, info
     try:
         loguru_logger.debug(f"Completion: {completion[-1].content}")
         response = parser.parse_answer(completion) or ""
+        if response.strip() == "":
+            return 0.0  # if the model does not generate an answer, return 0.0
+
         loguru_logger.debug(f"Response: {response}")
         gt = eval(info["ground_truth"])
         loguru_logger.debug(f"GT: {gt}")
