@@ -22,7 +22,7 @@ oversampling_factor = 1
 
 [orchestrator.train.sampling]
 max_completion_tokens = 4096
-temperature = 1.4
+temperature = 1.1
 
 [[orchestrator.train.env]]
 id = "ifbench_api_adapter@local"
