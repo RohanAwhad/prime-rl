@@ -1,26 +1,28 @@
 max_steps = 10000
-seq_len = 4096
-max_async_level = 8
+seq_len = 8196
+max_async_level = 4
 
 [deployment]
-num_train_gpus = 2
-num_infer_gpus = 6
+num_train_gpus = 4
+num_infer_gpus = 4
 
 [model]
-name = "Qwen/Qwen3-4B"
+name = "Qwen/Qwen3-8B"
 
 [wandb]
 project = "api-adapter"  # matches WANDB_PROJECT in api-adapter/.env
-name = "test-prime-rl-ifbench-4b-lora-8gpu-v7-higher-temp-n-lr"
+name = "test-prime-rl-ifbench-4b-lora-8gpu-v8"
 
 [orchestrator]
 batch_size = 2048
-rollouts_per_example = 32
+rollouts_per_example = 64
 max_off_policy_steps = 16
+oversampling_factor = 1
+
 
 [orchestrator.train.sampling]
-max_completion_tokens = 2048
-temperature = 1.6
+max_completion_tokens = 4096
+temperature = 1.4
 
 [[orchestrator.train.env]]
 id = "ifbench_api_adapter@local"
@@ -34,7 +36,7 @@ online_difficulty_filtering = true
 
 
 [trainer.optim]
-lr = 5e-6
+lr = 1e-6
 weight_decay = 0.001
 type = "adamw"
 
@@ -55,5 +57,5 @@ interval = 200
 resume_step = -1
 
 [inference.parallel]
-dp = 6
-tp = 1
+dp = 1
+tp = 4

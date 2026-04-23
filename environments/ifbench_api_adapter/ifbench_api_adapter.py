@@ -116,7 +116,7 @@ def load_environment(
         lambda x: {
             "question": (
                 f"User Prompt: {x['messages'][0]['content']}\n<draft_response>{x['claude_response']}</draft_response>"
-                # "/no_think"
+                "/no_think"
             ),
             "answer": "",
             "info": {**x},
