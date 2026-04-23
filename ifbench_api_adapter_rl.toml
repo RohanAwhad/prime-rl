@@ -11,7 +11,7 @@ name = "Qwen/Qwen3-8B"
 
 [wandb]
 project = "api-adapter"  # matches WANDB_PROJECT in api-adapter/.env
-name = "test-prime-rl-ifbench-4b-lora-8gpu-v8"
+name = "test-prime-rl-ifbench-4b-lora-8gpu-v9"
 
 [orchestrator]
 batch_size = 2048
